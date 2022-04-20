@@ -34,7 +34,7 @@ class Tree_view:
         self.font = pg.font.SysFont('arial', 15)
 
     def calc_coors(self, a):
-        w1, h1 = max(10, (self.w - 100)//len(a[-1])+1), (self.h-100)//len(a)
+        w1, h1 = max(10, (self.w - 100)//len(a[-1])+1)//1.5, (self.h-100)//len(a)
         x0, y0 = w1+30 if w1 < self.w//2 else self.w//2, (self.h + 30) - h1 if h1 < self.h//2 else self.h//2
         coor = [[(x0 + w1*i, y0) for i in range(len(a[-1]))]]
         for i in range(len(a)-1):
@@ -45,15 +45,19 @@ class Tree_view:
 
         return coor
 
-    def show_tree(self, root, wait=True):
-        a = get_matrix(root)
+    def show_tree(self, matrix):
+        a = matrix[0]
         coor = self.calc_coors(a)
 
-        while wait:
+        while True:
             self.window.fill((200, 200, 200))
+
+            m = set()
             for i in range(len(coor)):
                 for j in range(len(coor[i])):
-                    if a[len(a)-1-i][j] is not None:
+                    if a[len(a) - 1 - i][j] is not None:
+                        if a[len(a) - 1 - i][j][0] is not None:
+                            m.add(a[len(a)-1-i][j][0])
                         if i != len(coor) - 1:
                             pg.draw.line(self.window, (0, 0, 0), coor[i][j], coor[i + 1][j // 2], 2)
                         if a[len(a) - 1 - i][j][0] is not None:
@@ -65,15 +69,25 @@ class Tree_view:
                         else:
                             pg.draw.circle(self.window, (0, 0, 0), coor[i][j], 5)
 
+            text = self.font.render(' '.join(map(str, sorted(list(m)))), True, (0, 0, 0))
+            self.window.blit(text, (10, 10))
+
+            if matrix[1]:
+                text = self.font.render('балансировка...', True, (0, 0, 0))
+                self.window.blit(text, (10, 30))
             pg.display.flip()
 
             for e in pg.event.get():
                 if e.type == pg.QUIT:
-                    exit()
+                    return 'quit'
 
                 if e.type == pg.KEYUP:
+                    if e.key == pg.K_LEFT:
+                        return 'prev'
+                    if e.key == pg.K_RIGHT:
+                        return 'next'
                     if e.key == pg.K_RETURN:
-                        wait = False
+                        return 'add'
 
                 if e.type == pg.MOUSEBUTTONUP:
                     x, y = pg.mouse.get_pos()
@@ -83,6 +97,7 @@ class Tree_view:
                             if (x - coor[i][j][0]) ** 2 + (y - coor[i][j][1]) ** 2 < 300:
                                 res = (len(a)-1-i, j)
 
-                    return a[res[0]][res[1]] if res != 0 else 0
+                    if res != 0:
+                        return str(a[res[0]][res[1]][0])
 
 
