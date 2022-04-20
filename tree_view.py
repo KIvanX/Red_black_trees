@@ -18,7 +18,7 @@ def get_matrix(root):
 
     for i in range(len(a)):
         for j in range(len(a[i])):
-            a[i][j] = [a[i][j].key, a[i][j].isRed] if a[i][j] is not None else None
+            a[i][j] = [a[i][j].key, a[i][j].node_id, a[i][j].isRed] if a[i][j] is not None else None
 
     return a
 
@@ -52,24 +52,24 @@ class Tree_view:
         while True:
             self.window.fill((200, 200, 200))
 
-            m = set()
+            v = []
             for i in range(len(coor)):
                 for j in range(len(coor[i])):
                     if a[len(a) - 1 - i][j] is not None:
                         if a[len(a) - 1 - i][j][0] is not None:
-                            m.add(a[len(a)-1-i][j][0])
+                            v.append(a[len(a)-1-i][j][0])
                         if i != len(coor) - 1:
                             pg.draw.line(self.window, (0, 0, 0), coor[i][j], coor[i + 1][j // 2], 2)
                         if a[len(a) - 1 - i][j][0] is not None:
                             pg.draw.circle(self.window, (0, 0, 0), coor[i][j], 15, 2)
-                            pg.draw.circle(self.window, (250, 0, 0) if a[len(a)-1-i][j][1] else (0, 0, 0),
+                            pg.draw.circle(self.window, (250, 0, 0) if a[len(a)-1-i][j][2] else (0, 0, 0),
                                            coor[i][j], 13)
                             text = self.font.render(str(a[len(a)-1-i][j][0]), True, (250, 250, 250))
                             self.window.blit(text, (coor[i][j][0]-7, coor[i][j][1]-10))
                         else:
                             pg.draw.circle(self.window, (0, 0, 0), coor[i][j], 5)
 
-            text = self.font.render(' '.join(map(str, sorted(list(m)))), True, (0, 0, 0))
+            text = self.font.render(' '.join(map(str, sorted(v))), True, (0, 0, 0))
             self.window.blit(text, (10, 10))
 
             if matrix[1]:
@@ -98,6 +98,6 @@ class Tree_view:
                                 res = (len(a)-1-i, j)
 
                     if res != 0 and len(a) > 4:
-                        return str(a[res[0]][res[1]][0])
+                        return str(a[res[0]][res[1]][1])
 
 
