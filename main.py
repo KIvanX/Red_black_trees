@@ -93,7 +93,7 @@ class RB_Tree:
 
         now = self.root
         while now.key is not None:
-            now = now.left if key < now.key else now.rigth
+            now = now.left if key <= now.key else now.rigth
 
         now.key = key
         now.isRed = red
@@ -113,20 +113,17 @@ class RB_Tree:
         if node is None:
             node = father.rigth if father.rigth.node_id == node_id else father.left
 
-
         if node.left.key is not None and node.rigth.key is not None:
             now = node.left
             while now.rigth.key is not None:
                 now = now.rigth
             node.key, now.key = now.key, node.key
-            print(node.key, now.key)
-            if node.key == now.key:
-                print('loop')
-                self.show()
+            print(now.key)
             self.delete(now.node_id)
         elif node.left.key is not None or node.rigth.key is not None:
             node.key = node.left.key if node.left.key is not None else node.rigth.key
-            node.left = node.rigth = Node(None)
+            node.left = Node(None)
+            node.rigth = Node(None)
         elif node.left.key is None and node.rigth.key is None:
             if father.rigth == node:
                 father.rigth = Node(None)
@@ -163,7 +160,6 @@ class RB_Tree:
                         new_brother = new_father.left if new_father.rigth == father else new_father.rigth
                         self.show()
                         if new_brother is not None:
-                            print(1, new_father.key, new_brother.key)
                             self.rebalansing(new_father, new_brother)
             else:
                 father.isRed = True
@@ -196,7 +192,6 @@ class RB_Tree:
                         new_brother = new_father.left if new_father.rigth == father else new_father.rigth
                         self.show()
                         if new_brother is not None:
-                            print(2, new_father.key, new_brother.key)
                             self.rebalansing(new_father, new_brother)
             else:
                 father.isRed = True

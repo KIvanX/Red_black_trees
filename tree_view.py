@@ -99,5 +99,3 @@ class Tree_view:
 
                     if res != 0 and len(a) > 4:
                         return str(a[res[0]][res[1]][1])
-
-
