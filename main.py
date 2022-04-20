@@ -204,7 +204,7 @@ class RB_Tree:
                 return 0
             elif res == 'quit':
                 exit()
-            elif res[-1].isdigit() and self.index_show == len(self.hist) - 1:
+            elif res[-1].isdigit() and self.index_show == len(self.hist) - 1 and not self.hist[-1][1]:
                 print('del:', res)
                 self.delete(int(res))
                 self.index_show = len(self.hist)
