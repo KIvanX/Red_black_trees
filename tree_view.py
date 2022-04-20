@@ -97,7 +97,7 @@ class Tree_view:
                             if (x - coor[i][j][0]) ** 2 + (y - coor[i][j][1]) ** 2 < 300:
                                 res = (len(a)-1-i, j)
 
-                    if res != 0:
+                    if res != 0 and len(a) > 4:
                         return str(a[res[0]][res[1]][0])
 
 

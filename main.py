@@ -126,7 +126,6 @@ class RB_Tree:
                 self.rebalansing(father, brother)
 
     def rebalansing(self, father: Node, brother: Node):
-        print(brother.key)
         if father.rigth == brother:
             if not brother.isRed:
                 if brother.rigth.isRed:
@@ -151,8 +150,9 @@ class RB_Tree:
                         new_father = self.progenitors(father)[0]
                         new_brother = new_father.left if new_father.rigth == father else new_father.rigth
                         self.show()
-                        print(1, new_father.key, new_brother.key)
-                        self.rebalansing(new_father, new_brother)
+                        if new_brother is not None:
+                            print(1, new_father.key, new_brother.key)
+                            self.rebalansing(new_father, new_brother)
             else:
                 father.isRed = True
                 brother.isRed = False
@@ -183,8 +183,9 @@ class RB_Tree:
                         new_father = self.progenitors(father)[0]
                         new_brother = new_father.left if new_father.rigth == father else new_father.rigth
                         self.show()
-                        print(2, new_father.key, new_brother.key)
-                        self.rebalansing(new_father, new_brother)
+                        if new_brother is not None:
+                            print(2, new_father.key, new_brother.key)
+                            self.rebalansing(new_father, new_brother)
             else:
                 father.isRed = True
                 brother.isRed = False
