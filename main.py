@@ -17,7 +17,7 @@ class RB_Tree:
         self.index_show = -1
 
     def turn(self, node):
-        father, grandpa = self.descendants(node)[:2]
+        father, grandpa = self.progenitors(node)[:2]
         if father.left == node:
             father.left = node.rigth
             node.rigth = father
@@ -35,7 +35,7 @@ class RB_Tree:
             self.root.isRed = False
 
     def balancing(self, new: Node):
-        father, grandpa, great_grandpa = self.descendants(new)[:3]
+        father, grandpa, great_grandpa = self.progenitors(new)[:3]
 
         if not (new.key is None or father is None or grandpa is None) and new.isRed and father.isRed:
             uncle = grandpa.left if father == grandpa.rigth else grandpa.rigth
@@ -55,7 +55,7 @@ class RB_Tree:
                 grandpa.isRed = True
                 father.isRed = False
 
-    def descendants(self, child, by_key=False) -> list[Node]:
+    def progenitors(self, child, by_key=False) -> list[Node]:
         a, flag = [[self.root]], True
         while flag:
             flag = False
@@ -100,7 +100,7 @@ class RB_Tree:
         tree.balancing(now)
 
     def delete(self, key):
-        father = self.descendants(key, by_key=True)[0]
+        father = self.progenitors(key, by_key=True)[0]
         if father.key is None and self.root.key != key:
             return 0
 
@@ -148,10 +148,11 @@ class RB_Tree:
                     if father.isRed:
                         father.isRed = False
                     else:
-                        new_father = self.descendants(father)[0]
+                        new_father = self.progenitors(father)[0]
+                        new_brother = new_father.left if new_father.rigth == father else new_father.rigth
                         self.show()
-                        print(1, new_father.key, new_father.left.key)
-                        self.rebalansing(new_father, new_father.left)
+                        print(1, new_father.key, new_brother.key)
+                        self.rebalansing(new_father, new_brother)
             else:
                 father.isRed = True
                 brother.isRed = False
@@ -179,10 +180,11 @@ class RB_Tree:
                     if father.isRed:
                         father.isRed = False
                     else:
-                        new_father = self.descendants(father)[0]
+                        new_father = self.progenitors(father)[0]
+                        new_brother = new_father.left if new_father.rigth == father else new_father.rigth
                         self.show()
-                        print(2, new_father.key, new_father.rigth.key)
-                        self.rebalansing(new_father, new_father.rigth)
+                        print(2, new_father.key, new_brother.key)
+                        self.rebalansing(new_father, new_brother)
             else:
                 father.isRed = True
                 brother.isRed = False
@@ -205,7 +207,6 @@ class RB_Tree:
             elif res == 'quit':
                 exit()
             elif res[-1].isdigit() and self.index_show == len(self.hist) - 1 and not self.hist[-1][1]:
-                print('del:', res)
                 self.delete(int(res))
                 self.index_show = len(self.hist)
                 self.hist.append([tree_view.get_matrix(self.root), False])
