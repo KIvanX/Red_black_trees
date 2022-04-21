@@ -98,4 +98,4 @@ class Tree_view:
                                 res = (len(a)-1-i, j)
 
                     if res != 0 and len(a) > 4:
-                        return str(a[res[0]][res[1]][1])
+                        return a[res[0]][res[1]][:2]

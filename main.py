@@ -1,4 +1,5 @@
 import random
+
 import tree_view
 
 
@@ -19,7 +20,7 @@ class RB_Tree:
         self.next_id = 0
 
     def turn(self, node):
-        father, grandpa = self.progenitors(node.node_id)[:2]
+        father, grandpa = self.progenitors(node.key, node.node_id)[:2]
         if father.left == node:
             father.left = node.rigth
             node.rigth = father
@@ -37,7 +38,7 @@ class RB_Tree:
             self.root.isRed = False
 
     def balancing(self, new: Node):
-        father, grandpa, great_grandpa = self.progenitors(new.node_id)[:3]
+        father, grandpa, great_grandpa = self.progenitors(new.key, new.node_id)[:3]
 
         if not (new.key is None or father is None or grandpa is None) and new.isRed and father.isRed:
             uncle = grandpa.left if father == grandpa.rigth else grandpa.rigth
@@ -56,31 +57,6 @@ class RB_Tree:
                 self.turn(father)
                 grandpa.isRed = True
                 father.isRed = False
-
-    def progenitors(self, node_id) -> list[Node]:
-        a, flag = [[self.root]], True
-        while flag:
-            flag = False
-            row = []
-            for e in a[-1]:
-                if e is not None:
-                    flag = True
-                    row += [e.left, e.rigth]
-                else:
-                    row += [None, None]
-            if flag:
-                a.append(row)
-
-        for i in range(len(a)):
-            for j in range(len(a[i])):
-                if a[i][j] is not None and a[i][j].node_id == node_id:
-                    j1, desc = j, []
-                    for i1 in range(i-1, -1, -1):
-                        desc.append(a[i1][j1 // 2])
-                        j1 //= 2
-                    return desc + [Node(None)] * (3 - len(desc))
-
-        return [Node(None)] * 3
 
     def add(self, key, red=True):
         if self.root is None:
@@ -104,8 +80,11 @@ class RB_Tree:
 
         tree.balancing(now)
 
-    def delete(self, node_id):
-        father = self.progenitors(node_id)[0]
+    def delete(self, key, node_id=None):
+        if node_id is None:
+            node_id = self.find(key, self.root)
+
+        father = self.progenitors(key, node_id)[0]
         if father.key is None and self.root.node_id != node_id:
             return 0
 
@@ -119,7 +98,7 @@ class RB_Tree:
                 now = now.rigth
             node.key, now.key = now.key, node.key
             print(now.key)
-            self.delete(now.node_id)
+            self.delete(now.key, now.node_id)
         elif node.left.key is not None or node.rigth.key is not None:
             node.key = node.left.key if node.left.key is not None else node.rigth.key
             node.left = Node(None)
@@ -156,7 +135,7 @@ class RB_Tree:
                     if father.isRed:
                         father.isRed = False
                     else:
-                        new_father = self.progenitors(father.node_id)[0]
+                        new_father = self.progenitors(father.key, father.node_id)[0]
                         new_brother = new_father.left if new_father.rigth == father else new_father.rigth
                         self.show()
                         if new_brother is not None:
@@ -188,7 +167,7 @@ class RB_Tree:
                     if father.isRed:
                         father.isRed = False
                     else:
-                        new_father = self.progenitors(father.node_id)[0]
+                        new_father = self.progenitors(father.key, father.node_id)[0]
                         new_brother = new_father.left if new_father.rigth == father else new_father.rigth
                         self.show()
                         if new_brother is not None:
@@ -214,15 +193,39 @@ class RB_Tree:
                 return 0
             elif res == 'quit':
                 exit()
-            elif res[-1].isdigit() and self.index_show == len(self.hist) - 1 and not self.hist[-1][1]:
-                self.delete(int(res))
+            elif type(res) == list and self.index_show == len(self.hist) - 1 and not self.hist[-1][1]:
+                self.delete(res[0], res[1])
                 self.index_show = len(self.hist)
                 self.hist.append([tree_view.get_matrix(self.root), False])
+
+    def progenitors(self, key, node_id):
+        ways, flag = [self.find(key, self.root)], True
+        while len(ways) > 0:
+            new_ways = []
+            for i in range(len(ways)):
+                if ways[i][-1].node_id != node_id:
+                    w = self.find(key, ways[i][-1].left)
+                    if w is not None:
+                        new_ways.append(ways[i] + w)
+
+                    w = self.find(key, ways[i][-1].rigth)
+                    if w is not None:
+                        new_ways.append(ways[i] + w)
+                else:
+                    return list(reversed(ways[i][:-1])) + [Node(None)] * (3 - len(ways[i][:-1]))
+            ways = new_ways
+        return [Node(None)] * 3
+
+    def find(self, key, now):
+        way = []
+        while now.key is not None and now.key != key:
+            way.append(now)
+            now = now.left if key < now.key else now.rigth
+        return way + [now] if now.key == key else None
 
 
 tree = RB_Tree()
 viewer = tree_view.Tree_view(600, 600)
-
 
 while True:
     tree.add(random.randint(-99, 99))
