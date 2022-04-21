@@ -1,5 +1,5 @@
 import pygame as pg
-import os
+# import os
 
 
 def get_matrix(root):
@@ -26,7 +26,7 @@ def get_matrix(root):
 class Tree_view:
 
     def __init__(self, w, h):
-        os.environ['SDL_VIDEO_WINDOW_POS'] = f'{1300}, {200}'
+        # os.environ['SDL_VIDEO_WINDOW_POS'] = f'{1300}, {200}'
         pg.init()
         self.w, self.h = w, h
         self.window = pg.display.set_mode((w, h), pg.RESIZABLE)
