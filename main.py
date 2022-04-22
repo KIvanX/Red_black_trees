@@ -78,7 +78,7 @@ class RB_Tree:
         now.left = Node(None)
         now.rigth = Node(None)
 
-        tree.balancing(now)
+        self.balancing(now)
 
     def delete(self, key, node_id=None):
         if node_id is None:
